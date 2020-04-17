@@ -16,7 +16,6 @@ export default {
             component:'@/pages/dynamicComponent',
             name: '数据库连接配置', // 兼容此写法
             exact: false,
-            access: 'isAuthenticatedMenu',
             authority: ['root']
           },
           {
@@ -24,7 +23,6 @@ export default {
             component:'@/pages/dynamicComponent',
             name: '数据库连接配置1', // 兼容此写法
             exact: false,
-            access: 'isAuthenticatedMenu',
             authority: ['admin']
           },
         ]
@@ -44,7 +42,6 @@ export default {
             name: '对象属性配置', // 兼容此写法
             component: '@/pages/dynamicComponent',
             exact: false,
-            access: 'isAuthenticatedMenu',
             authority: ['user'],
           },
         ]
