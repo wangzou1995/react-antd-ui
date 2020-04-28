@@ -1,16 +1,19 @@
-import { Avatar, Card, Col, List, Skeleton, Row, Statistic } from 'antd';
-import React, { Component } from 'react';
+import { Avatar, Card, Col, Skeleton, Row, Statistic } from 'antd';
+import React, { useEffect } from 'react';
 
-import { Link, Dispatch, connect } from 'umi';
+import { Link, connect } from 'umi';
 import { PageHeaderWrapper } from '@ant-design/pro-layout';
 import moment from 'moment';
-import Radar from './components/Radar';
-import { ModalState } from './model';
 import EditableLinkGroup from './components/EditableLinkGroup';
 import styles from './style.less';
-import { ActivitiesType, CurrentUser, NoticeType, RadarDataType } from './data.d';
-import { UserModelState, UserModelType } from '@/models/UserModel';
-import user from '../../../mock/user';
+import { CurrentUser, UserModelState } from '@/models/user';
+
+import { useModel } from 'umi';
+
+export interface CurrentProject {
+  name: string;
+  id: string;
+}
 
 const links = [
   {
@@ -39,20 +42,12 @@ const links = [
   },
 ];
 
-interface DashboardWorkplaceProps {
-  currentUser?: CurrentUser;
-  projectNotice: NoticeType[];
-  activities: ActivitiesType[];
-  radarData: RadarDataType[];
-  dispatch: Dispatch<any>;
-  user: UserModelState;
-  currentUserLoading: boolean;
-  projectLoading: boolean;
-  activitiesLoading: boolean;
-}
-
-const PageHeaderContent: React.FC<{ currentUser: CurrentUser,user: UserModelState }> = ({ currentUser,user }) => {
+const PageHeaderContent: React.FC<{ currentUser: CurrentUser }> = ({
+  currentUser,
+}) => {
   const loading = currentUser && Object.keys(currentUser).length;
+  const { initialState } = useModel('@@initialState');
+  console.log(initialState.currentProjectId);
   if (!loading) {
     return <Skeleton avatar paragraph={{ rows: 1 }} active />;
   }
@@ -64,111 +59,96 @@ const PageHeaderContent: React.FC<{ currentUser: CurrentUser,user: UserModelStat
       <div className={styles.content}>
         <div className={styles.contentTitle}>
           早安，
-          {user.name}
+          {currentUser.name}
           ，祝你开心每一天！
-        </div>
-        <div>
-          {currentUser.title} |{currentUser.group}
         </div>
       </div>
     </div>
   );
 };
 
-const ExtraContent: React.FC<{}> = () => (
-  <div className={styles.extraContent}>
-    <div className={styles.statItem}>
-      <Statistic title="项目数" value={56} />
+const ExtraContent: React.FC<{
+  projectNum: number | undefined;
+  currentProject: CurrentProject;
+}> = ({ projectNum, currentProject }) => {
+  return (
+    <div className={styles.extraContent}>
+      <div className={styles.statItem}>
+        <Statistic title="项目数" value={projectNum} />
+      </div>
+      <div className={styles.statItem}>
+        <Statistic title="当前访问项目" value={currentProject.name} />
+      </div>
     </div>
-    <div className={styles.statItem}>
-      <Statistic title="团队内排名" value={8} suffix="/ 24" />
-    </div>
-    <div className={styles.statItem}>
-      <Statistic title="项目访问" value={2223} />
-    </div>
-  </div>
-);
-
-class DashboardWorkplace extends Component<DashboardWorkplaceProps> {
-  componentDidMount() {
-    const { dispatch } = this.props;
-    dispatch({
-      type: 'dashboardWorkplace/init',
-    });
-  }
-
-  componentWillUnmount() {
-    const { dispatch } = this.props;
-    dispatch({
-      type: 'dashboardWorkplace/clear',
-    });
-  }
-
-  renderActivities = (item: ActivitiesType) => {
-    const events = item.template.split(/@\{([^{}]*)\}/gi).map((key) => {
-      if (item[key]) {
-        return (
-          <a href={item[key].link} key={item[key].name}>
-            {item[key].name}
-          </a>
-        );
-      }
-      return key;
-    });
-    return (
-      <List.Item key={item.id}>
-        <List.Item.Meta
-          avatar={<Avatar src={item.user.avatar} />}
-          title={
-            <span>
-              <a className={styles.username}>{item.user.name}</a>
-              &nbsp;
-              <span className={styles.event}>{events}</span>
-            </span>
-          }
-          description={
-            <span className={styles.datetime} title={item.updatedAt}>
-              {moment(item.updatedAt).fromNow()}
-            </span>
-          }
-        />
-      </List.Item>
-    );
+  );
+};
+const DashboardWorkplace = (props: any) => {
+  const {
+    currentUser,
+    projectNotice,
+    projectLoading,
+    currentProject,
+    dispatch,
+  } = props;
+  const initialInfo = (useModel && useModel('@@initialState')) || {
+    initialState: undefined,
+    loading: false,
   };
+  const { initialState, setInitialState, refresh } = initialInfo;
+  useEffect(() => {
+    // 动态增加新语言
+    dispatch({
+      type: 'user/init',
+    });
+  }, []);
 
-  render() {
-    const {
-      currentUser,
-      activities,
-      projectNotice,
-      projectLoading,
-      activitiesLoading,
-      radarData,
-      user,
-    } = this.props;
+  // const { setInitialState } = useModel('@@initialState');
+  if (!currentUser || !currentUser.userid) {
+    return null;
+  }
 
-    if (!currentUser || !currentUser.userid) {
-      return null;
-    }
-    return (
+  return (
+    initialState &&
+    projectNotice && (
       <PageHeaderWrapper
-        content={<PageHeaderContent currentUser={currentUser}  user={user}/>}
-        extraContent={<ExtraContent />}
+        content={<PageHeaderContent currentUser={currentUser} />}
+        // @ts-ignore
+        extraContent={
+          <ExtraContent
+            projectNum={projectNotice.length}
+            currentProject={{ name: 's' }}
+          />
+        }
       >
         <Row gutter={24}>
           <Col xl={16} lg={24} md={24} sm={24} xs={24}>
             <Card
               className={styles.projectList}
               style={{ marginBottom: 24 }}
-              title="进行中的项目"
+              title="全部项目"
               bordered={false}
-              extra={<Link to="/">全部项目</Link>}
+              // extra={<Link to="/">全部项目</Link>}
               loading={projectLoading}
               bodyStyle={{ padding: 0 }}
             >
-              {projectNotice.map((item) => (
-                <Card.Grid className={styles.projectGrid} key={item.id}>
-                  <Card bodyStyle={{ padding: 0 }} bordered={false}>
+              {projectNotice.map((item, index) => (
+                <Card.Grid className={styles.projectGrid} key={index}>
+                  <Card
+                    bodyStyle={{ padding: 0 }}
+                    bordered={false}
+                    onClick={() => {
+                      dispatch({
+                        type: 'user/fetchCurrentProject',
+                        payload: projectNotice[index],
+                      });
+                      // f(projectNotice[index].id)
+                      setInitialState({
+                        ...initialState,
+                        currentProjectId: projectNotice[index].id,
+                        name: 'wanb',
+                      });
+                    }}
+                  >
                     <Card.Meta
                       title={
                         <div className={styles.cardTitle}>
@@ -181,7 +161,10 @@ class DashboardWorkplace extends Component<DashboardWorkplaceProps> {
                     <div className={styles.projectItemContent}>
                       <Link to={item.memberLink}>{item.member || ''}</Link>
                       {item.updatedAt && (
-                        <span className={styles.datetime} title={item.updatedAt}>
+                        <span
+                          className={styles.datetime}
+                          title={item.updatedAt}
+                        >
                           {moment(item.updatedAt).fromNow()}
                         </span>
                       )}
@@ -189,21 +172,6 @@ class DashboardWorkplace extends Component<DashboardWorkplaceProps> {
                   </Card>
                 </Card.Grid>
               ))}
-            </Card>
-            <Card
-              bodyStyle={{ padding: 0 }}
-              bordered={false}
-              className={styles.activeCard}
-              title="动态"
-              loading={activitiesLoading}
-            >
-              <List<ActivitiesType>
-                loading={activitiesLoading}
-                renderItem={(item) => this.renderActivities(item)}
-                dataSource={activities}
-                className={styles.activitiesList}
-                size="large"
-              />
             </Card>
           </Col>
           <Col xl={8} lg={24} md={24} sm={24} xs={24}>
@@ -213,17 +181,11 @@ class DashboardWorkplace extends Component<DashboardWorkplaceProps> {
               bordered={false}
               bodyStyle={{ padding: 0 }}
             >
-              <EditableLinkGroup onAdd={() => {}} links={links} linkElement={Link} />
-            </Card>
-            <Card
-              style={{ marginBottom: 24 }}
-              bordered={false}
-              title="XX 指数"
-              loading={radarData.length === 0}
-            >
-              <div className={styles.chart}>
-                <Radar hasLegend height={343} data={radarData} />
-              </div>
+              <EditableLinkGroup
+                onAdd={() => {}}
+                links={links}
+                linkElement={Link}
+              />
             </Card>
             <Card
               bodyStyle={{ paddingTop: 12, paddingBottom: 12 }}
@@ -233,7 +195,7 @@ class DashboardWorkplace extends Component<DashboardWorkplaceProps> {
             >
               <div className={styles.members}>
                 <Row gutter={48}>
-                  {projectNotice.map((item) => (
+                  {projectNotice.map(item => (
                     <Col span={12} key={`members-item-${item.id}`}>
                       <Link to={item.href}>
                         <Avatar src={item.logo} size="small" />
@@ -247,17 +209,15 @@ class DashboardWorkplace extends Component<DashboardWorkplaceProps> {
           </Col>
         </Row>
       </PageHeaderWrapper>
-    );
-  }
-}
+    )
+  );
+};
 
 export default connect(
   ({
-    dashboardWorkplace: { currentUser, projectNotice, activities, radarData },
-    user,
+    user: { currentUser, projectNotice, currentProject },
     loading,
   }: {
-    dashboardWorkplace: ModalState;
     user: UserModelState;
     loading: {
       effects: {
@@ -267,11 +227,8 @@ export default connect(
   }) => ({
     currentUser,
     projectNotice,
-    activities,
-    radarData,
-    user,
-    currentUserLoading: loading.effects['dashboardWorkplace/fetchUserCurrent'],
-    projectLoading: loading.effects['dashboardWorkplace/fetchProjectNotice'],
-    activitiesLoading: loading.effects['dashboardWorkplace/fetchActivitiesList'],
+    currentProject,
+    currentUserLoading: loading.effects['user/fetchUserCurrent'],
+    projectLoading: loading.effects['user/fetchProjectNotice'],
   }),
 )(DashboardWorkplace);

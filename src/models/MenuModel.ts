@@ -1,4 +1,3 @@
-
 import { Effect, Reducer, Subscription } from 'umi';
 
 export interface MenuModelState {
@@ -27,12 +26,11 @@ const MenuModel: MenuModelType = {
   state: {
     name: 'admin',
     path: 's',
-    component: 'ss'
+    component: 'ss',
   },
 
   effects: {
-    *query({ payload }, { call, put }) {
-    },
+    *query({ payload }, { call, put }) {},
   },
   reducers: {
     save(state, action) {
@@ -52,11 +50,11 @@ const MenuModel: MenuModelType = {
         if (pathname === '/') {
           dispatch({
             type: 'query',
-          })
+          });
         }
       });
-    }
-  }
+    },
+  },
 };
 
 export default MenuModel;
