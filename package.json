@@ -20,13 +20,13 @@
     ]
   },
   "dependencies": {
-    "@ant-design/icons": "^4.0.0",
     "@umijs/plugin-qiankun": "^2.1.1",
+    "@ant-design/icons": "^4.0.0",
     "@umijs/preset-react": "1.x",
     "@umijs/test": "^3.1.1",
     "bizcharts": "^3.5.3-beta.0",
     "lint-staged": "^10.0.7",
-    "moment": "^2.22.2",
+    "moment": "2.24.0",
     "prettier": "^1.19.1",
     "prop-types": "^15.5.10",
     "react": "^16.12.0",
@@ -36,7 +36,6 @@
     "yorkie": "^2.0.0"
   },
   "devDependencies": {
-    "@umijs/preset-ui": "^2.1.11",
-    "umi-plugin-antd-icon-config": "^2.0.3"
+    "@umijs/preset-ui": "^2.1.11"
   }
 }

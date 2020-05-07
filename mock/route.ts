@@ -3,52 +3,66 @@ export default {
   'GET /api/routes': {
     routes: [
       {
-        path: '/sys/database',
-        component: '@/pages/dynamicComponent',
+        path: '/design',
         appId: '1',
         menu: {
-          name: '数据库设计',
-          icon: 'database',
+          name: '系统设计',
         },
-        exact: false,
         routes: [
           {
-            path: '/sys/database/createdb',
-            component: '@/pages/dynamicComponent',
-            name: '数据库连接配置', // 兼容此写法
-            exact: false,
-            appId: '1',
-            authority: ['root'],
-          },
-          {
-            path: '/sys/database/createdb1',
-            component: '@/pages/dynamicComponent',
-            name: '数据库连接配置1', // 兼容此写法
-            exact: false,
-            appId: '1',
-            authority: ['admin'],
-          },
-        ],
-      },
-      {
-        path: '/sys/object',
-        component: '@/pages/dynamicComponent',
-        appId: '2',
-        menu: {
-          name: '对象设计',
-          icon: 'tags',
-        },
-        exact: false,
-        routes: [
-          {
-            path: '/sys/object/createobj',
-            name: '对象属性配置', // 兼容此写法
+            path: '/design/createApp',
+            menu: {
+              name: '创建应用',
+            },
             component: '@/pages/dynamicComponent',
             exact: false,
             authority: ['user'],
           },
+          {
+            path: '/design/subscribeApp',
+            menu: {
+              name: '订阅应用',
+            },
+            component: '@/pages/dynamicComponent',
+            exact: false,
+            authority: ['user'],
+          },
+          {
+            path: '/design/database',
+            menu: {
+              name: '数据库维护',
+            },
+            component: '@/pages/dynamicComponent',
+            exact: false,
+            authority: ['user'],
+          },
+          {
+            path: '/design/table',
+            menu: {
+              name: '数据库表',
+            },
+            component: '@/pages/dynamicComponent',
+            exact: false,
+            authority: ['user'],
+          },
+          {
+            path: '/design/object',
+            component: '@/pages/dynamicComponent',
+            menu: {
+              name: '对象管理',
+            },
+            exact: false,
+          },
         ],
       },
+      {
+        path: '/sys',
+        appId: '1',
+        menu: {
+          name: '系统管理',
+        },
+      },
+
       {
         path: '/404',
         layout: false,

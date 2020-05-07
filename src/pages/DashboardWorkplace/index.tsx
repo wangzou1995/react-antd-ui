@@ -9,11 +9,7 @@ import styles from './style.less';
 import { CurrentUser, UserModelState } from '@/models/user';
 
 import { useModel } from 'umi';
-
-export interface CurrentProject {
-  name: string;
-  id: string;
-}
+import { NoticeType } from './data';
 
 const links = [
   {
@@ -41,13 +37,22 @@ const links = [
     href: '',
   },
 ];
-
+function getProjectName(projectNotice: NoticeType[], id: string): string {
+  let temp = projectNotice.find((item: NoticeType) => {
+    return item.id === id;
+  });
+  if (temp) {
+    return temp.title;
+  } else {
+    return '';
+  }
+}
 const PageHeaderContent: React.FC<{ currentUser: CurrentUser }> = ({
   currentUser,
 }) => {
   const loading = currentUser && Object.keys(currentUser).length;
   const { initialState } = useModel('@@initialState');
-  console.log(initialState.currentProjectId);
+
   if (!loading) {
     return <Skeleton avatar paragraph={{ rows: 1 }} active />;
   }
@@ -69,32 +74,26 @@ const PageHeaderContent: React.FC<{ currentUser: CurrentUser }> = ({
 
 const ExtraContent: React.FC<{
   projectNum: number | undefined;
-  currentProject: CurrentProject;
-}> = ({ projectNum, currentProject }) => {
+  projectName: string;
+}> = ({ projectNum, projectName }) => {
   return (
     <div className={styles.extraContent}>
       <div className={styles.statItem}>
         <Statistic title="项目数" value={projectNum} />
       </div>
       <div className={styles.statItem}>
-        <Statistic title="当前访问项目" value={currentProject.name} />
+        <Statistic title="当前访问项目" value={projectName} />
       </div>
     </div>
   );
 };
 const DashboardWorkplace = (props: any) => {
-  const {
-    currentUser,
-    projectNotice,
-    projectLoading,
-    currentProject,
-    dispatch,
-  } = props;
+  const { currentUser, projectNotice, projectLoading, dispatch } = props;
   const initialInfo = (useModel && useModel('@@initialState')) || {
     initialState: undefined,
     loading: false,
   };
-  const { initialState, setInitialState, refresh } = initialInfo;
+  const { initialState, setInitialState } = initialInfo;
   useEffect(() => {
     // 动态增加新语言
     dispatch({
@@ -102,7 +101,6 @@ const DashboardWorkplace = (props: any) => {
     });
   }, []);
 
-  // const { setInitialState } = useModel('@@initialState');
   if (!currentUser || !currentUser.userid) {
     return null;
   }
@@ -116,7 +114,10 @@ const DashboardWorkplace = (props: any) => {
         extraContent={
           <ExtraContent
             projectNum={projectNotice.length}
-            currentProject={{ name: 's' }}
+            projectName={getProjectName(
+              projectNotice,
+              initialState.currentProjectId,
+            )}
           />
         }
       >
@@ -131,7 +132,7 @@ const DashboardWorkplace = (props: any) => {
               loading={projectLoading}
               bodyStyle={{ padding: 0 }}
             >
-              {projectNotice.map((item, index) => (
+              {projectNotice.map((item: NoticeType, index: number) => (
                 <Card.Grid className={styles.projectGrid} key={index}>
                   <Card
                     bodyStyle={{ padding: 0 }}
@@ -145,7 +146,6 @@ const DashboardWorkplace = (props: any) => {
                       setInitialState({
                         ...initialState,
                         currentProjectId: projectNotice[index].id,
-                        name: 'wanb',
                       });
                     }}
                   >
@@ -195,7 +195,7 @@ const DashboardWorkplace = (props: any) => {
             >
               <div className={styles.members}>
                 <Row gutter={48}>
-                  {projectNotice.map(item => (
+                  {projectNotice.map((item: NoticeType) => (
                     <Col span={12} key={`members-item-${item.id}`}>
                       <Link to={item.href}>
                         <Avatar src={item.logo} size="small" />

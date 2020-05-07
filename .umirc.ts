@@ -1,6 +1,7 @@
 import { defineConfig } from 'umi';
+import DynamicComponent from './src/pages/dynamicComponent';
 export default defineConfig({
- // base: '/#/',
+  // base: '/#/',
   nodeModulesTransform: {
     type: 'none',
   },
@@ -18,7 +19,6 @@ export default defineConfig({
       },
       exact: true,
     },
-
   ],
   title: '后台管理',
   dva: {},

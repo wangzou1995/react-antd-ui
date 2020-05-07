@@ -4,7 +4,6 @@
  */
 
 export default function(initialState: any) {
-  console.log(initialState);
   const { authority, currentProjectId } = initialState;
   return {
     /**
@@ -18,13 +17,6 @@ export default function(initialState: any) {
         isCurrentProject(route, currentProjectId)
       );
     },
-    // isCurrentProjectMenu: (route: {[key: string] :any})=> {
-    //   if (!route.appId) {
-    //     return false;
-    //   } else {
-    //     return route.appId != currentProjectId
-    //   }
-    // }
   };
 }
 

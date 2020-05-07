@@ -5,7 +5,7 @@ export default {
     authority: ['admin', 'root', 'user'],
     avatar:
       'https://gw.alipayobjects.com/zos/rmsportal/BiazfanxmamNRoxxVxka.png',
-    currentProjectId: '2',
+    currentProjectId: '1',
   },
   'GET /api/project/notice': [
     {
