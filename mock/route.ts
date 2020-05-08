@@ -14,7 +14,7 @@ export default {
             menu: {
               name: '创建应用',
             },
-            component: '@/pages/dynamicComponent',
+            component: '@/pages/App',
             exact: false,
             authority: ['user'],
           },
