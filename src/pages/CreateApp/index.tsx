@@ -16,7 +16,7 @@ import { getAppMessage, getHistoryMessage, addAppMessage } from './service';
 import UpdateApp from './components/UpdateApp';
 import { FormValueType } from './components/UpdateApp';
 import PubHistoryTable from './components/PublishHistory';
-import CreateApp from './components/CreateApp';
+import CreateApp from './components/AddApp';
 const handleUpdate = (value: FormValueType): boolean => {
   console.log('edit app values: {}', value);
   return true;

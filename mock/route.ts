@@ -14,7 +14,7 @@ export default {
             menu: {
               name: '创建应用',
             },
-            component: '@/pages/App',
+            component: '@/pages/CreateApp',
             exact: false,
             authority: ['user'],
           },
