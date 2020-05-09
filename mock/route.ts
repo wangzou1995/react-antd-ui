@@ -23,7 +23,7 @@ export default {
             menu: {
               name: '订阅应用',
             },
-            component: '@/pages/dynamicComponent',
+            component: '@/pages/SubscriptApp',
             exact: false,
             authority: ['user'],
           },
