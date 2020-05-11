@@ -26,11 +26,17 @@ const CreateApp: React.FC<UpdateAppProps> = props => {
       title="新建应用信息"
       visible={modalVisible}
       onOk={okHandle}
-      onCancel={() => onCancel()}
+      onCancel={() => {
+        form.resetFields();
+        onCancel();
+      }}
       width={800}
       okText="确认"
       cancelText="取消"
-      afterClose={() => onCancel()}
+      afterClose={() => {
+        form.resetFields();
+        onCancel();
+      }}
       // footer={footerRender()}
     >
       <Form {...layout} form={form}>

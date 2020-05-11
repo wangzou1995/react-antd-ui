@@ -28,11 +28,11 @@ export default {
             authority: ['user'],
           },
           {
-            path: '/design/database',
+            path: '/design/datasource',
             menu: {
               name: '数据库维护',
             },
-            component: '@/pages/dynamicComponent',
+            component: '@/pages/DataSource',
             exact: false,
             authority: ['user'],
           },
